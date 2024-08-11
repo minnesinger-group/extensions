@@ -1,9 +1,13 @@
-export function mapRecord<T extends Record<string, TV>, TV, R>(
-  obj: T,
-  fn: <K extends keyof T>(key: K, value: T[K]) => R,
-): { [key in keyof T]: R } {
-  return Object.entries(obj).reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: fn(key, value as T[typeof key]) }),
-    {} as { [key in keyof T]: R },
+export function objectKeys<T extends object>(obj: T): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
+}
+
+export function mapRecord<
+  T1 extends { [key in string | number | symbol]: unknown },
+  T2 extends { [key in keyof T1]: unknown },
+>(obj: T1, fn: (key: keyof T1, value: T1[keyof T1]) => T2[keyof T1]): T2 {
+  return objectKeys(obj).reduce(
+    (acc, key) => ({ ...acc, [key]: fn(key, obj[key]) }),
+    {} as T2,
   );
 }
